@@ -24,7 +24,7 @@ func main() {
 }
 
 func serveTemplate(w http.ResponseWriter, r *http.Request) {
-	lp := filepath.Join("templates", "indexLayout.html")
+	lp := filepath.Join("templates", "indexLayout.tmpl")
 	fp := filepath.Join("templates", filepath.Clean(r.URL.Path))
 
 	fmt.Println(filepath.Clean(r.URL.Path))
