@@ -1,3 +1,5 @@
+// https://www.alexedwards.net/blog/serving-static-sites-with-go
+
 package main
 
 import(
