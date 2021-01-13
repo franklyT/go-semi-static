@@ -2,41 +2,41 @@
 
 package main
 
-import(
+import (
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
+	"strconv"
 )
 
 func main() {
-	fileServer := http.FileServer(http.Dir("./static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fileServer))
+	var port int = 3000
+	var fileServer http.Handler = http.FileServer(http.Dir("./static"))
 
+	// Handlers
+	http.Handle("/static/", http.StripPrefix("/static/", fileServer))
 	http.HandleFunc("/", serveTemplate)
 
-	log.Println("Listening on :3000...")
-	err:= http.ListenAndServe(":3000", nil)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// Log
+	log.Println("Listening on " + `:` + strconv.Itoa(port))
+
+	// Serve
+	log.Fatal(http.ListenAndServe(`:`+strconv.Itoa(port), nil))
 }
 
-func serveTemplate(w http.ResponseWriter, r *http.Request) {
-	lp := filepath.Join("templates", "indexLayout.tmpl")
-	fp := filepath.Join("templates", filepath.Clean(r.URL.Path))
+func serveTemplate(writer http.ResponseWriter, reader *http.Request) {
+	layoutPath := filepath.Join("templates", "indexLayout.tmpl")
+	filePath := filepath.Join("templates", filepath.Clean(reader.URL.Path))
 
-	fmt.Println(filepath.Clean(r.URL.Path))
+	fmt.Println(filepath.Clean(reader.URL.Path))
 
-	tmpl, err := template.ParseFiles(lp, fp)
+	tmpl, err := template.ParseFiles(layoutPath, filePath)
 	if err != nil {
 		fmt.Println(err)
 		log.Fatal(err)
 	}
 
-	err = tmpl.ExecuteTemplate(w, "indexLayout", nil)
-	if err != nil {
-		log.Fatal(err)
-	}
+	log.Fatal(tmpl.ExecuteTemplate(writer, "indexLayout", nil))
 }
