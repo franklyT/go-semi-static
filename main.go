@@ -20,10 +20,10 @@ func main() {
 	http.HandleFunc("/", serveTemplate)
 
 	// Log
-	log.Println("Listening on " + `:` + strconv.Itoa(port))
+	log.Println("Listening on " + `:` + strconv.FormatInt(int64(port), 10))
 
 	// Serve
-	log.Fatal(http.ListenAndServe(`:`+strconv.Itoa(port), nil))
+	log.Fatal(http.ListenAndServe(`:`+strconv.FormatInt(int64(port), 10), nil))
 }
 
 func serveTemplate(writer http.ResponseWriter, reader *http.Request) {
