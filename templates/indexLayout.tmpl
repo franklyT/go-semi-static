@@ -1,14 +1,14 @@
 <!doctype html>
 {{define "indexLayout"}}
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>{{template "title"}}</title>
-    <link href="/static/styles/style.css" rel="stylesheet">
-</head>
-{{template "body"}}
-<body>
-<footer>Made with Go</footer>
-</body>
+    <html>
+        <head>
+            <meta charset="utf-8">
+            <title>{{template "title"}}</title>
+            <link href="/static/styles/style.css" rel="stylesheet">
+        </head>
+        <body>
+            {{template "body"}}
+            <footer><p>Made with Go</p></footer>
+        </body>
+    </html>
 {{end}}
-</html>

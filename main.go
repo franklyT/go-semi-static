@@ -12,8 +12,8 @@ import (
 )
 
 func main() {
-	var port int = 3000
-	var fileServer http.Handler = http.FileServer(http.Dir("./static"))
+	var port = 3000
+	var fileServer = http.FileServer(http.Dir("./static"))
 
 	// Handlers
 	http.Handle("/static/", http.StripPrefix("/static/", fileServer))
@@ -27,16 +27,18 @@ func main() {
 }
 
 func serveTemplate(writer http.ResponseWriter, reader *http.Request) {
-	layoutPath := filepath.Join("templates", "indexLayout.tmpl")
-	filePath := filepath.Join("templates", filepath.Clean(reader.URL.Path))
+	// Get Paths
+	var layoutPath = filepath.Join("templates", "indexLayout.tmpl")
+	var filePath = filepath.Join("templates", filepath.Clean(reader.URL.Path))
+	fmt.Println("Serving Path: " + filepath.Clean(reader.URL.Path))
 
-	fmt.Println(filepath.Clean(reader.URL.Path))
-
+	// Parse Template
 	tmpl, err := template.ParseFiles(layoutPath, filePath)
 	if err != nil {
 		fmt.Println(err)
 		log.Fatal(err)
 	}
 
+	// Execute Template
 	log.Fatal(tmpl.ExecuteTemplate(writer, "indexLayout", nil))
 }
