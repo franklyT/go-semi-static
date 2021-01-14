@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 func main() {
@@ -28,7 +29,7 @@ func main() {
 
 func serveTemplate(writer http.ResponseWriter, reader *http.Request) {
 	// Get Paths
-	var layoutPath = filepath.Join("templates", "indexLayout.tmpl")
+	var layoutPath = filepath.Join("templates", strings.Split(reader.URL.Path, ".")[0]+"Layout.tmpl")
 	var filePath = filepath.Clean("./" + reader.URL.Path)
 
 	fmt.Println("Serving Path: " + reader.URL.Path)
