@@ -1,5 +1,4 @@
-// https://www.alexedwards.net/blog/serving-static-sites-with-go
-
+// Quick semi-static golang server
 package main
 
 import (
@@ -7,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 )
@@ -29,16 +29,62 @@ func main() {
 func serveTemplate(writer http.ResponseWriter, reader *http.Request) {
 	// Get Paths
 	var layoutPath = filepath.Join("templates", "indexLayout.tmpl")
-	var filePath = filepath.Join("templates", filepath.Clean(reader.URL.Path))
-	fmt.Println("Serving Path: " + filepath.Clean(reader.URL.Path))
+	var filePath = filepath.Clean("./" + reader.URL.Path)
+
+	fmt.Println("Serving Path: " + reader.URL.Path)
+
+	is404 := handle404(writer, filePath)
+	// Return if 404
+	if is404 {
+		fmt.Println("Server returned 404.")
+		return
+	}
 
 	// Parse Template
 	tmpl, err := template.ParseFiles(layoutPath, filePath)
 	if err != nil {
-		fmt.Println(err)
-		log.Fatal(err)
+		// Log the detailed error
+		log.Println(err.Error())
+		// Return a generic "Internal Server Error" message
+		http.Error(writer, http.StatusText(500), 500)
+		return
 	}
 
 	// Execute Template
-	log.Fatal(tmpl.ExecuteTemplate(writer, "indexLayout", nil))
+	err = tmpl.ExecuteTemplate(writer, "indexLayout", nil)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(writer, http.StatusText(500), 500)
+	}
+}
+
+func handle404(writer http.ResponseWriter, filePath string) bool {
+	// Return a 404 if the template doesn't exist
+	info, err := os.Stat(filePath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			template404(writer)
+			return true
+		}
+	}
+
+	// Return a 404 if the request is for a directory
+	if info.IsDir() {
+		template404(writer)
+		return true
+	}
+
+	return false
+}
+
+func template404(writer http.ResponseWriter) {
+	tmpl, err := template.ParseFiles("templates/404Layout.tmpl", "404.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = tmpl.ExecuteTemplate(writer, "404Layout", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
