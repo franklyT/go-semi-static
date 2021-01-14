@@ -33,8 +33,8 @@ func serveTemplate(writer http.ResponseWriter, reader *http.Request) {
 
 	fmt.Println("Serving Path: " + reader.URL.Path)
 
-	is404 := handle404(writer, filePath)
 	// Return if 404
+	is404 := handle404(writer, filePath)
 	if is404 {
 		fmt.Println("Server returned 404.")
 		return
